@@ -11,6 +11,7 @@ import (
 	"github.com/x14n/go-chat-x14n/common/constant"
 	"github.com/x14n/go-chat-x14n/common/protocol"
 	"github.com/x14n/go-chat-x14n/global"
+	"github.com/x14n/go-chat-x14n/service"
 	"go.uber.org/zap"
 )
 
@@ -63,35 +64,30 @@ func (s *Server) start() {
 			if msg.To != "" {
 				//判断是什么类型的消息
 				if msg.ContentType >= constant.TEXT && msg.ContentType <= constant.VIDIO {
-					_, exit := s.Clients[msg.From]
-					_, exits := s.Clients[msg.To]
+					_, exits := s.Clients[msg.From]
 
-					if exit && exits {
-
+					if exits {
+						saveMessage()
+					}
+					if msg.MessageType == constant.MESSAGE_TYPE_TOUSER {
+						client, ok := s.Clients[msg.To]
+						if ok {
+							msgByte, err := proto.Marshal(msg)
+							if err != nil {
+								global.GLogger.Error("proto to byte error", zap.Any("proto error", err.Error()))
+								return
+							}
+							client.Send <- msgByte
+							close(client.Send)
+						}
+						global.GLogger.Warn("user is not online")
 					}
 				} else {
-
+					global.GLogger.Error("msgtype is not right！")
+					return
 				}
-				//检查clients chan中是否有user
-				//检查是群聊还是什么类型
 			} else {
 				global.GLogger.Info("no user to send")
-			}
-			//case conn := <-s.Broadcast:
-			//从message中查看发送给谁
-			//有接受人
-			//是发送到个人还是群
-			// 个人
-			//如果是普通文件消息的话直接转发
-			//如果是文件等消息的话 先保存 再转发
-			//如果client chan 中没有这个人
-			//查看mysql是否有这个用户,
-			//	Y: 将消息发送到kafka brooker 保存起来 等用户登录的时候再获取
-			// N : 输出错误日志 断开连接
-			// 群发消息
-			//无接受人
-			//直接中断连接
-		}
 
 	}
 }
@@ -100,7 +96,7 @@ func (s *Server) start() {
 
 // 保存消息的策略
 func saveMessage(msg *protocol.Message) {
-	// file 类型 file类型主要是文件压缩包tar zip
+	//file 类型 file类型主要是文件压缩包tar zip
 	if msg.ContentType == 2 {
 		handleBase64Context(".zip", msg)
 	}
@@ -117,7 +113,10 @@ func saveMessage(msg *protocol.Message) {
 		handleBase64Context(".vido", msg)
 	}
 
+	service.MessageService.saveMessage()
+	
 }
+
 
 func handleBase64Context(extension string, msg *protocol.Message) {
 	url := uuid.New().String() + extension
