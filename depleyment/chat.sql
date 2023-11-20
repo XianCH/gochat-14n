@@ -32,6 +32,8 @@ CREATE TABLE IF NOT EXISTS `user_friends`(
     KEY `idex_user_friends_friends_id`(`friend_id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT '用户好友关系表';
 
+DROP TABLE IF EXISTS `message`;
+
 CREATE TABLE IF EXISTS `message` (
     `id` INT NOT NULL AUTO_INCREMENT COMMENT 'id',
     `from_user_id` INT DEFAULT NULL COMMENT '发送方id',
@@ -48,6 +50,24 @@ CREATE TABLE IF EXISTS `message` (
     KEY `idx_message_to_user_id` (`to_user_id`),
     KEY `idex_message_from_user_id`(`from_user_id`)
 ) engine =InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT '消息表'
+
+DROP TABLE IF EXISTS `group`;
+
+CREATE TABLE IF EXISTS `group`(
+    `id` INT NOT NULL AUTO_INCREMENT COMMENT 'id',
+    `admin_id` INT DEFAULT NULL COMMENT 'ADMIN ID',
+    `name` varchar(150) DEFAULT NULL COMMENT 'group name',
+    `notice` varchar(300) DEFAULT NULL COMMENT 'group notice',
+    `uuid` varchar(150) DEFAULT NULL COMMENT 'uuid',
+    `create_time` DEFAULT CURRENT_TIMESTAMP(3) COMMENT 'CREATE TIME',
+    `update_time` DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP(3) COMMENT 'UPDATE TIME',
+    `delete_time` datetime(3) DEFAULT NULL COMMENT 'delete time',
+    PRIMARY KEY(`id`),
+    KEY `idx_groups_admin_id`
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT '群组表';
+
+
+
 
 
 
