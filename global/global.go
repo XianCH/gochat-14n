@@ -15,6 +15,6 @@ const (
 
 var (
 	GLogger *zap.Logger
-	_DB     *gorm.DB
+	DB      *gorm.DB
 	GConfig config.ServerConfig
 )
