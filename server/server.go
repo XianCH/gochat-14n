@@ -67,7 +67,7 @@ func (s *Server) start() {
 					_, exits := s.Clients[msg.From]
 
 					if exits {
-						saveMessage()
+						saveMessage(msg)
 					}
 					if msg.MessageType == constant.MESSAGE_TYPE_TOUSER {
 						client, ok := s.Clients[msg.To]
@@ -81,6 +81,8 @@ func (s *Server) start() {
 							close(client.Send)
 						}
 						global.GLogger.Warn("user is not online")
+					} else if msg.MessageType == constant.MESSAGE_TYPE_TOGROUP {
+						sendMessageToGroup(msg, s)
 					}
 				} else {
 					global.GLogger.Error("msgtype is not right！")
@@ -88,7 +90,9 @@ func (s *Server) start() {
 				}
 			} else {
 				global.GLogger.Info("no user to send")
-
+				return
+			}
+		}
 	}
 }
 
@@ -113,10 +117,8 @@ func saveMessage(msg *protocol.Message) {
 		handleBase64Context(".vido", msg)
 	}
 
-	service.MessageService.saveMessage()
-	
+	service.MessageService.SaveMessage(*msg)
 }
-
 
 func handleBase64Context(extension string, msg *protocol.Message) {
 	url := uuid.New().String() + extension
@@ -139,4 +141,37 @@ func handleBase64Context(extension string, msg *protocol.Message) {
 
 	msg.Url = url
 	msg.Content = ""
+}
+
+func sendMessageToGroup(m *protocol.Message, s *Server) {
+	users := service.GroupService.GetUserIdByGroup(m.To)
+	for _, user := range users {
+		if user.Uuid == m.From {
+			continue
+		}
+
+		client, ok := s.Clients[user.Uuid]
+		if !ok {
+			continue
+		}
+
+		fromUserDetail := service.UserService.GetUserDetails(m.From)
+
+		msgSend := protocol.Message{
+			Avatar:       fromUserDetail.Avatar,
+			FromUsername: m.FromUsername,
+			From:         m.To,
+			To:           m.From,
+			Content:      m.Content,
+			ContentType:  m.ContentType,
+			Type:         m.Type,
+			MessageType:  m.MessageType,
+			Url:          m.Url,
+		}
+
+		byteMessage, err := proto.Marshal(&msgSend)
+		if err != nil {
+			client.Send <- byteMessage
+		}
+	}
 }
