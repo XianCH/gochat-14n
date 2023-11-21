@@ -8,11 +8,13 @@ import (
 	"go.uber.org/zap"
 )
 
-type MessageService struct{}
+type messageService struct{}
 
 const NULL_ID int32 = 0
 
-func (m *MessageService) SaveMessage(msg protocol.Message) {
+var MessageService = new(messageService)
+
+func (m *messageService) SaveMessage(msg protocol.Message) {
 	db := global.DB
 	var fromUser model.User
 
