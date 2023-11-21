@@ -63,8 +63,22 @@ CREATE TABLE IF EXISTS `group`(
     `update_time` DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP(3) COMMENT 'UPDATE TIME',
     `delete_time` datetime(3) DEFAULT NULL COMMENT 'delete time',
     PRIMARY KEY(`id`),
-    KEY `idx_groups_admin_id`
+    KEY `idx_groups_admin_id`(`admin_id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT '群组表';
+
+CREATE TABLE IF EXISTS `group_member`(
+    `id` INT NOT NULL AUTO_INCREMENT COMMENT 'ID',
+    `user_id` INT DEFAULT NULL COMMENT 'USER ID',
+    `group_id` INT DEFAULT NULL COMMENT 'GROUP ID',
+    `nickname` VARCHAR(150) DEFAULT NULL COMMENT 'USER NICKNAME',
+    `create_time` DEFAULT CURRENT_TIMESTAMP(3) COMMENT 'CREATE TIME',
+    `update_time` DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP(3) COMMENT 'UPDATE TIME',
+    `delete_time` bigint unsigned DEFAULT NULL COMMENT 'DELETE TIME',
+    `mute` SMALLINT DEFAULT NULL COMMENT '是否是禁言',
+    PRIMARY KEY(`id`),
+    KEY `idx_group_member_user_id`(`user_id`),
+    KEY `idx_group_member_group_id`(`group_id`)
+)ENGINE=InnoDB DEFAULT CHARACTER=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT '用户群组表'
 
 
 

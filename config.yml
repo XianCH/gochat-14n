@@ -1,5 +1,5 @@
 app:
-  desc: Gin框架学习实践
+  desc: go-chat-x14n
   version: v1.0.0
   addr: 0.0.0.0:8080
   env: dev
