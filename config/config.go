@@ -14,7 +14,8 @@ type ServerConfig struct {
 	App   app   `yaml:"app"`
 	Mysql mysql `yaml:"mysql"`
 	Log   log   `yaml:"log"`
-	Jwt   Jwt   `yaml:"jwt"`
+	Jwt   jwt   `yaml:"jwt"`
+	Redis redis `yaml:"redis"`
 	// Jwt     jwt     `yaml:"jwt"`
 	// Redis   redis   `yaml:"redis"`
 	// Elastic elastic `yaml:"elastic"`
@@ -66,8 +67,16 @@ type lumberJack struct {
 	Compress   bool `yaml:"compress"`   // 是否压缩/归档旧文件
 }
 
-type Jwt struct {
+type jwt struct {
 	Securt     string        `yaml:"securt"`
 	Issure     string        `yaml:"issure"`
 	ExpireTime time.Duration `yaml:"expireTime"`
+}
+
+type redis struct {
+	Addr        string        `yaml:"addr"`
+	Password    string        `yaml:"password"`
+	DefaultDB   int           `yaml:"defaultDB"`
+	DialTimeOut time.Duration `yaml:"deialTimeOut"`
+	Enable      bool          `yaml:"enable"`
 }
