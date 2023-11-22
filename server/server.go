@@ -1,10 +1,13 @@
 package server
 
 import (
+	"chat-room/pkg/global/log"
 	"encoding/base64"
+	"net/http"
 	"os"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/gogo/protobuf/proto"
 	"github.com/google/uuid"
@@ -34,6 +37,23 @@ func NewServer() *Server {
 }
 
 var MyServer = NewServer()
+
+func SCore() {
+	router := NewRouter()
+	go MyServer.start()
+
+	s := &http.Server{
+		Addr:           ":8888",
+		Handler:        router,
+		ReadTimeout:    10 * time.Second,
+		WriteTimeout:   10 * time.Second,
+		MaxHeaderBytes: 1 << 20,
+	}
+	err := s.ListenAndServe()
+	if nil != err {
+		log.Logger.Error("server error", log.Any("serverError", err))
+	}
+}
 
 func (s *Server) start() {
 	global.GLogger.Info("server start", zap.Any("server start", "server start ..."))
