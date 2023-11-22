@@ -20,10 +20,10 @@ log:
 mysql:
   enable: true
   host: 127.0.0.1
-  port: 3306
+  port: 3406
   user: root
-  password: 3953
-  database: gotest
+  password: thepswdforroot
+  database: 14nchat
   charset: utf8mb4 # 要支持完整的UTF-8编码,需设置成: utf8mb4
   parseTime: true # 解析time.Time类型
   timeZone: Local # 时区,若设置 Asia/Shanghai,需写成: Asia%2fShanghai
@@ -45,3 +45,10 @@ jwt:
   secret: x14n.cn
   issuer: x14n
   expireTime: 3h
+
+redis:
+  enable: true
+  url: http://127.0.0.1
+  password: 3953
+  defaultDB: 0
+  dialTimeOut: 5s
