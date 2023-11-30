@@ -19,6 +19,14 @@ func SuccessWithMsg(msg string) *ResponseMessage {
 	}
 }
 
+func SuccessWithData(data any) *ResponseMessage {
+	return &ResponseMessage{
+		Code: 0,
+		Msg:  "Success",
+		Data: data,
+	}
+}
+
 func SuccessWithMsgData(msg string, data any) *ResponseMessage {
 	return &ResponseMessage{
 		Code: 0,
